@@ -24,7 +24,7 @@ package.json 的 name、cordis.patch.yml 的 name、install-plugin.ps1 里的路
 1. 打开 awesome-dsh-plugin 的 GitHub 仓库（插件页底部有 repo 链接），
    编辑它的 `plugins.json`（或按仓库 README 的说明提交）。
 2. 把 `market/plugins-entry.json` 的内容追加进 `plugins` 数组，
-   并把 `<your-github-username>` 替换成你的账号。
+   并把 `benrong2048-boop` 替换成你的账号。
 3. `category` 必须是目录接受的分类 id（现用 `agi`，提交前对照现有条目改对）。
 4. 提 PR；合并后市场首页就会出现本插件，`install` 命令为：
 

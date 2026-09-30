@@ -18,8 +18,7 @@ Ported from [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-opt
 Requirements: DSH (desktop or web profile), Node.js 18+.
 
 ```powershell
-# replace the URL with the repo you published to
-git clone https://github.com/<your-name>/dsh-prompt-polish.git
+git clone https://github.com/benrong2048-boop/dsh-prompt-polish.git
 cd dsh-prompt-polish
 pwsh -File install-plugin.ps1 -ProfileName desktop   # or -ProfileName web
 ```

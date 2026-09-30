@@ -1,8 +1,8 @@
 {
   "name": "dsh-client-ui-prompt-polish",
-  "owner": "<your-github-username>",
-  "url": "https://github.com/<your-github-username>/dsh-prompt-polish",
-  "page": "https://awesome-dsh-plugin.com/p/<your-github-username>/dsh-prompt-polish/",
+  "owner": "benrong2048-boop",
+  "url": "https://github.com/benrong2048-boop/dsh-prompt-polish",
+  "page": "https://awesome-dsh-plugin.com/p/benrong2048-boop/dsh-prompt-polish/",
   "category": "agi",
   "description": {
     "en": "Prompt-polish button inside the DSH composer (left of the model selector): stream-optimizes the draft via the ported prompt-optimizer template engine (system/user/iterate modes), with copy, write-back, write-back-and-send, variable extraction, consent-gated local history with version chains, three-column version comparison with local structural analysis, and per-run token usage. Nothing leaves the machine.",
