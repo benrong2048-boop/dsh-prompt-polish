@@ -1,0 +1,13 @@
+{
+  "name": "dsh-client-ui-prompt-polish",
+  "owner": "<your-github-username>",
+  "url": "https://github.com/<your-github-username>/dsh-prompt-polish",
+  "page": "https://awesome-dsh-plugin.com/p/<your-github-username>/dsh-prompt-polish/",
+  "category": "agi",
+  "description": {
+    "en": "Prompt-polish button inside the DSH composer (left of the model selector): stream-optimizes the draft via the ported prompt-optimizer template engine (system/user/iterate modes), with copy, write-back, write-back-and-send, variable extraction, consent-gated local history with version chains, three-column version comparison with local structural analysis, and per-run token usage. Nothing leaves the machine.",
+    "zh": "DSH 输入框内的「提示词润色」按钮（模型选择器左侧）：移植 prompt-optimizer 的模板引擎（系统/用户/迭代三模式），流式输出优化稿，支持复制、写回草稿、写回并发送、变量提取；历史采用本机授权制并带版本链，可三列对比与结构分析；每次润色的 token 消耗可见。数据不出本机。"
+  },
+  "npm": "@mimo-ai/dsh-client-ui-prompt-polish",
+  "version": "0.2.0"
+}

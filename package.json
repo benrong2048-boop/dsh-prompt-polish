@@ -1,0 +1,27 @@
+{
+  "name": "@mimo-ai/dsh-client-ui-prompt-polish",
+  "version": "0.2.0",
+  "description": "Prompt-polish button beside the composer model seat for DSH, porting linshenkx/prompt-optimizer's optimizationMode axis, mustache template engine, template registry and variable extraction.",
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./prompts": "./lib/prompts.js",
+    "./processor": "./lib/processor.js",
+    "./mustache": "./lib/mustache.js",
+    "./extraction": "./lib/extraction.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-api-session-controller"
+      ]
+    }
+  }
+}
