@@ -37,34 +37,39 @@ Skip it: prompts that are already structured (role + context + constraints + for
 
 Honest limitations: the result is only as good as the template and model behind it — it adds structure but cannot know facts you forgot to include; iteration is one revision per call, not a chat; and every click costs tokens (typically a few hundred, shown before you commit).
 
-## Two real examples
+## Two real examples: what changes is the completeness of the task
 
-Both are actual runs from this plugin's own usage — what was typed, and what the model received after one click.
+The short version first: **polish never rewrites your wording — it writes out the goal, the basis, the constraints and the output format that lived only in your head.** Both examples below are real runs from this plugin's own usage.
 
 ### Example 1: one line of spoken-style feedback → seven executable requirements
 
-**Typed:**
+**Typed (7 short sentences, all attitude):**
 
-> 你不要僵硬，实际都是以具体内容为准的。你的目的在于梳理该章节的内容，以思维导图的形式呈现。 ("Don't be rigid — everything should follow the actual content. Your goal is to organize this chapter as a mind map.")
+> 你不要僵硬，实际都是以具体内容为准的。你的目的在于梳理该章节的内容，以思维导图的形式呈现。 ("Don't be rigid — go by the actual content. Organize this chapter as a mind map.")
 
-**After one click, the model received:**
+The trouble: "don't be rigid" is an attitude, not a standard. What counts as rigid, what to go by, how many branches, what the output looks like — the model can only guess, and may guess wrong.
 
-> 请以我提供的章节具体内容为唯一依据，梳理该章节的内容结构，并输出为思维导图。要求如下： 1. 不要套用固定模板…（章节实际讲了什么，就按什么逻辑拆分） 2. 中心主题：使用章节标题或能概括全章的核心主题 3. 一级分支：按主要部分/核心论点划分，通常 3—7 个，不强行凑数 4. 下级分支：按分类、因果、流程、对比等实际逻辑展开，可到三级或四级 5. 节点表述：简洁名词短语，保留原文术语，不添加、不遗漏 6. 输出形式：Markdown 嵌套列表，体现父子层级 7. 多种梳理方式时，选最贴合原文结构的一种
+**After one ✨ click, the model received:**
 
-The difference: "don't be rigid" is vibes — each model guesses what that means. After polish it is seven checkable requirements: single source of truth, structure-follows-content, branch counts, depth, node phrasing, output format, tie-breaking rules. The more complex the task, the more that is worth.
+> 请以我提供的章节具体内容为唯一依据，梳理该章节的内容结构，并输出为思维导图。要求如下： 1. 不要套用固定模板、预设框架或僵化层级；章节实际讲了什么，就按什么逻辑拆分。 2. 中心主题：使用章节标题或能概括全章的核心主题。 3. 一级分支：按主要部分/核心论点/关键问题划分，通常 3—7 个，不强行凑数。 4. 下级分支：按分类、因果、流程、对比等实际逻辑展开，简单到二级、复杂到三四级。 5. 节点表述：简洁名词短语，保留原文术语，不添加、不遗漏。 6. 输出形式：Markdown 嵌套列表，体现父子层级。 7. 多种合理梳理时，选最贴合原文结构、最便于理解的一种。
+
+**What changed:** one attitude became seven checkable standards — a single source of truth, structure-follows-content, branch counts, depth limits, node phrasing, output format, and how to choose among competing readings. Every place you feared "rigid" now maps to a hard requirement.
 
 ### Example 2: "take a look" → a complete review brief
 
-**Typed:**
+**Typed (9 characters of intent; no criteria, no output spec):**
 
 > 我是想让你从产品经理的角度，看看我们这个作品设计的咋样，还有什么需要改进的 ("From a PM's perspective, look at our design — how is it, what should improve?")
 
-**After one click, the model received:**
+This names a role (PM) but not what to review against, not what the deliverable looks like. The likely reply is polite filler: "overall good, polish the details."
 
-> 请你以产品经理的视角，评审我提供的作品设计并给出改进建议。作品信息如下（请按实际情况补充）：作品名称/类型、目标用户群体、核心需求或痛点、核心功能与主要使用流程、设计材料。请重点从以下维度分析：1) 目标用户与核心需求是否明确、痛点是否真实 2) 功能与场景是否匹配、有无冗余或缺失 3) 流程与交互是否顺畅、上手成本 4) 与同类产品的差异和优势 5) 可行性与商业价值。输出要求：先整体评价（优点 + 最关键问题），再按高/中/低优先级列可落地建议（每条带理由和预期效果），信息不足先列出需要补充的内容，不要凭空假设。
+**After one ✨ click, the model received:**
 
-The difference: "look at how it is" invites generic praise. After polish it is a review brief — a checklist that makes the model ask for missing info instead of guessing, five locked evaluation dimensions, and an output contract (overall verdict → prioritized, actionable suggestions). What changed is the **completeness of the task**, not the prettiness of the wording.
+> 请你以产品经理的视角，评审我提供的作品设计并给出改进建议。作品信息如下（请按实际情况补充）：作品名称/类型、目标用户群体、要解决的核心需求或痛点、核心功能与主要使用流程、设计材料。请重点从以下维度分析：1. 目标用户与核心需求是否明确、痛点是否真实；2. 功能与场景是否匹配、有无冗余或缺失；3. 流程与交互是否顺畅、上手成本；4. 与同类产品的差异和优势；5. 可行性与商业价值。输出要求：先整体评价（优点+最关键问题），再按高/中/低优先级列可落地建议（每条带理由和预期效果），信息不足先列需要补充的内容，不要凭空假设。
 
+**What changed:** three moves — it asks you for the missing product info instead of inventing it, locks "take a look" into five judgeable dimensions, and fixes the output order: overall verdict → prioritized actionable suggestions → request materials first if inputs are missing. The exits for generic praise are closed, one by one.
+
+The pattern in both: **polish supplies the premises your original message never stated** — the basis, the standards, the boundaries, the deliverable shape. The fuller those premises, the closer the result to what you meant. That is what the templates do, and what appending "take it seriously" never will.
 ## Where it came from
 
 The optimization engine is a faithful port of
