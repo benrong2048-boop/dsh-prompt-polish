@@ -8,7 +8,7 @@
  */
 import { pathToFileURL } from "node:url";
 
-const PROFILE = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@mimo-ai/dsh-client-ui-prompt-polish";
+const PROFILE = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@benrong/dsh-prompt-polish";
 const lib = (name) => pathToFileURL(`${PROFILE}/lib/${name}`).href;
 
 const mustache = await import(lib("mustache.js"));

@@ -97,7 +97,7 @@ pwsh -File install-plugin.ps1 -ProfileName desktop   # 或 -ProfileName web
 ```yaml
 - insert:
     - id: prompt-polish
-      name: "@mimo-ai/dsh-client-ui-prompt-polish"
+      name: "@benrong/dsh-prompt-polish"
 ```
 
 卸载：删包目录、删那段 insert，重启 DSH。
