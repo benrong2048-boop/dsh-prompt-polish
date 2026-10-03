@@ -14,7 +14,7 @@ npm login
 npm publish --access public
 ```
 
-包名用 `@mimo-ai/dsh-client-ui-prompt-polish`（或改成你自己的 scope，记得同步改
+包名用 `@benrong/dsh-prompt-polish`（或改成你自己的 scope，记得同步改
 package.json 的 name、cordis.patch.yml 的 name、install-plugin.ps1 里的路径）。
 
 不想发 npm 也可以：条目的 `url` 指向 GitHub 仓库即可，市场用 `git+https://…` 安装。
@@ -29,7 +29,7 @@ package.json 的 name、cordis.patch.yml 的 name、install-plugin.ps1 里的路
 4. 提 PR；合并后市场首页就会出现本插件，`install` 命令为：
 
 ```powershell
-dsh plugin --profile web add @mimo-ai/dsh-client-ui-prompt-polish
+dsh plugin --profile web add @benrong/dsh-prompt-polish
 ```
 
 ## 2. desktop profile 的说明（写进你的 README）

@@ -1,0 +1,5 @@
+# 用户给新 token 后：把 <NEW_TOKEN> 替换，运行本脚本
+$token = '<NEW_TOKEN>'
+Set-Content -Path "$env:USERPROFILE\.npmrc" -Value ("registry=https://registry.npmjs.org/`n//registry.npmjs.org/:_authToken=" + $token) -Encoding ASCII
+cd 'D:\claude code\mimo公司\dsh\prompt-polish'
+npm publish --access public --userconfig="$env:USERPROFILE\.npmrc"

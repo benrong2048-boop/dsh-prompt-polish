@@ -96,13 +96,13 @@ desktop app has no reload key, and Ctrl+R does nothing.
 
 Manual install, if you would rather see everything it touches:
 
-1. Copy this folder to %USERPROFILE%\.dsh\profiles\<profile>\node_modules\@mimo-ai\dsh-client-ui-prompt-polish.
+1. Copy this folder to %USERPROFILE%\.dsh\profiles\<profile>\node_modules\@benrong\dsh-prompt-polish.
 2. Append to %USERPROFILE%\.dsh\profiles\<profile>\cordis.patch.yml:
 
 ```yaml
 - insert:
     - id: prompt-polish
-      name: "@mimo-ai/dsh-client-ui-prompt-polish"
+      name: "@benrong/dsh-prompt-polish"
 ```
 
 3. Restart DSH.
