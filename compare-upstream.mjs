@@ -9,7 +9,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const UP_ROOT = process.env.UP; // .../packages/core/src
-const LIB = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@mimo-ai/dsh-client-ui-prompt-polish/lib";
+const LIB = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@benrong/dsh-prompt-polish/lib";
 const { TEMPLATES } = await import(pathToFileURL(LIB + "/prompts.js").href);
 
 const walk = (dir, acc = []) => {

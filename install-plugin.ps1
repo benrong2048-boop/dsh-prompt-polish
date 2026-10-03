@@ -15,7 +15,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $src = $PSScriptRoot
-$dst = Join-Path $DshHome ('profiles\' + $TargetProfile + '\node_modules\@mimo-ai\dsh-client-ui-prompt-polish')
+$dst = Join-Path $DshHome ('profiles\' + $TargetProfile + '\node_modules\@benrong\dsh-prompt-polish')
 
 New-Item -ItemType Directory -Force -Path (Split-Path $dst) | Out-Null
 New-Item -ItemType Directory -Force -Path $dst | Out-Null
@@ -32,7 +32,7 @@ foreach ($f in @('mustache.js','processor.js','extraction.js','templates-generat
 
 # Append the plugin row to the profile's cordis.patch.yml when absent.
 $patch = Join-Path $DshHome ('profiles\' + $TargetProfile + '\cordis.patch.yml')
-$row = @('', '- insert:', '    - id: prompt-polish', '      name: "@mimo-ai/dsh-client-ui-prompt-polish"')
+$row = @('', '- insert:', '    - id: prompt-polish', '      name: "@benrong/dsh-prompt-polish"')
 if (-not (Test-Path $patch)) {
   Set-Content -Path $patch -Value ($row | Select-Object -Skip 1) -Encoding UTF8
   "created $patch with the plugin row"
@@ -40,7 +40,16 @@ if (-not (Test-Path $patch)) {
   Add-Content -Path $patch -Value ($row -join "`r`n") -Encoding UTF8
   "appended the plugin row to $patch"
 } else {
-  "patch row already present in $patch"
+  # The row exists: make sure it points at the current package name (a rename must not be skipped).
+  $content = Get-Content -Raw -LiteralPath $patch
+  $pattern = '(?m)(- id:\s*prompt-polish\s*\r?\n\s*name:\s*)("?)[^\r\n"]+\2'
+  $updated = [regex]::Replace($content, $pattern, ('${1}"' + '@benrong/dsh-prompt-polish' + '"'))
+  if ($updated -ne $content) {
+    Set-Content -LiteralPath $patch -Value $updated -NoNewline -Encoding UTF8
+    "updated the plugin row name in $patch"
+  } else {
+    "patch row already present and correct in $patch"
+  }
 }
 
 'All done. Restart DSH to load the plugin.'

@@ -11,7 +11,7 @@
 #>
 $ErrorActionPreference = 'Stop'
 $src = $PSScriptRoot
-$dst = Join-Path $env:USERPROFILE '.dsh\profiles\desktop\node_modules\@mimo-ai\dsh-client-ui-prompt-polish'
+$dst = Join-Path $env:USERPROFILE '.dsh\profiles\desktop\node_modules\@benrong\dsh-prompt-polish'
 
 New-Item -ItemType Directory -Force -Path (Split-Path $dst) | Out-Null
 Copy-Item -Path (Join-Path $src 'package.json') -Destination $dst -Force

@@ -16,9 +16,9 @@ import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import vm from "node:vm";
 
-const PROFILE = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@mimo-ai/dsh-client-ui-prompt-polish";
+const PROFILE = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@benrong/dsh-prompt-polish";
 const BUNDLE = `${PROFILE}/lib/client.js`;
-const PACKAGE_ID = "@mimo-ai/dsh-client-ui-prompt-polish";
+const PACKAGE_ID = "@benrong/dsh-prompt-polish";
 const { OPTIMIZATION_MODES, TEMPLATES } = await import(pathToFileURL(`${PROFILE}/lib/prompts.js`).href);
 
 const fail = [];

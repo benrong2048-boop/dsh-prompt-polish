@@ -1,5 +1,5 @@
 # dsh bundle patch: inserts the prompt-polish button into the profile's layer stack.
 - insert:
     - id: prompt-polish
-      name: "@mimo-ai/dsh-client-ui-prompt-polish"
+      name: "@benrong/dsh-prompt-polish"
 

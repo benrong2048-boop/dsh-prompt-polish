@@ -16,7 +16,7 @@
 import { Readable } from "node:stream";
 import { pathToFileURL } from "node:url";
 
-const PROFILE = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@mimo-ai/dsh-client-ui-prompt-polish";
+const PROFILE = "C:/Users/23528/.dsh/profiles/desktop/node_modules/@benrong/dsh-prompt-polish";
 const mod = await import(pathToFileURL(`${PROFILE}/lib/index.js`).href);
 const { apply, inject, name, OPTIMIZE_ROUTE, MODELS_ROUTE, EXTRACT_ROUTE } = mod;
 const { getTemplate, registerTemplate, TEMPLATES } = await import(pathToFileURL(`${PROFILE}/lib/prompts.js`).href);
