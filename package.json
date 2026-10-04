@@ -1,6 +1,6 @@
 {
   "name": "@benrong/dsh-prompt-polish",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Prompt-polish button beside the composer model seat for DSH, porting linshenkx/prompt-optimizer's optimizationMode axis, mustache template engine, template registry and variable extraction.",
   "type": "module",
   "license": "AGPL-3.0-or-later",
@@ -50,5 +50,12 @@
     "react": {
       "optional": true
     }
-  }
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ]
 }
