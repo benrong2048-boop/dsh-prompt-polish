@@ -1,98 +1,114 @@
 # dsh-prompt-polish
 
-在 DSH 的输入框旁边加一个 ✨ 润色按钮：写下你的需求，点一下，几秒钟拿到一份带角色、目标、约束和输出格式的完整提示词。默认只写回输入框，发不发由你。
+**English** · [中文](./README.zh.md)
 
-润色引擎移植自 [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer)（AGPL-3.0），十套模板逐字保留；按钮、面板、历史与对比由本仓库实现。
+You type "帮我写个周报" into DSH, hit Enter, and get a generic answer. You know the model *could* do it well — if only the prompt had a role, a goal, the data you have, and an output format. Writing all that out every time is the boring part.
 
-## 功能与实现
+This plugin adds a ✨ **润色 (Polish)** button right next to the model selector in the DSH composer. Click it, and your rough draft is rewritten in-place — streamed into a panel — into a structured prompt. You decide what happens next: write it back into the composer (default, nothing is sent), send it directly, or just copy it.
 
-| 能力 | 说明 |
-| --- | --- |
-| 三种润色模式 | 系统提示词 / 用户提示词 / 迭代优化，对应上游三套模板族，流式输出 |
-| 结果去向 | 复制 / 替换草稿（不发）/ 发送草稿，边界固定：不点击不写入、不发送 |
-| 模型与时耗 | 可在面板里固定润色用的模型（默认跟随输入框）；每次显示模型、耗时、字数、token |
-| token 用量 | 逐次与按链汇总；模型未上报时显示"未提供"，不显示假 0 |
-| 本机历史 | 授权后每次生成存为版本，迭代自动成链；上限 50 条，支持逐条删、整链删、全清 |
-| 版本对比 | 原稿｜所选版本｜最新版本 三列，附本机结构分析（行数增删、目标/背景/约束/格式覆盖），不再调用模型 |
-| 变量提取 | 把结果中可变的片段抽成 \`{{变量}}\`，写回即成模板 |
+Nothing about the polish is silent: you see the result, the model that produced it, how long it took, and what it cost in tokens.
 
-## 润色效果：两组真实前后对照
+## What it actually does
 
-以下两组对照来自本插件的真实使用记录：左边是输入的原话，右边是点一次润色后模型实际收到的任务。效果差异集中在角色、依据、约束、输出格式这四项——也正是原话里最难现想的部分。
+**1. Rewrites your draft, you keep control.**
+The optimized prompt lands in a panel, not in your composer. Three buttons decide its fate:
+- **替换草稿** (Replace draft) — writes the result into the composer. Nothing is sent; you still read and edit it. This is the default path and the whole point: the AI prepared it, *you* pull the trigger.
+- **发送草稿** (Send draft) — writes it back AND sends, one click fewer.
+- **复制草稿** (Copy) — clipboard only.
 
-**例一：把"不要僵硬"翻译成七条标准。**
+**2. Knows the difference between a system prompt and a user prompt.**
+The panel top row is not a style picker — it picks which *template family* rewrites your text: 系统提示词 (you are writing an AI's instructions), 用户提示词 (you are asking for work), or 迭代优化 (revise the previous result: make it shorter, add an example, tone it down for newbies — the revision note is required, and the button tells you so if you skip it).
 
-| 原话 | 润色后 |
-| --- | --- |
-| 你不要僵硬，实际都是以具体内容为准的。你的目的在于梳理该章节的内容，以思维导图的形式呈现。 | 请以我提供的章节具体内容为唯一依据，梳理该章节的内容结构，并输出为思维导图。要求：①不套固定模板，章节实际讲了什么就按什么逻辑拆；②中心主题用章节标题或概括性短语；③一级分支按内容划分，3—7 个不凑数；④下级按实际逻辑展开，可到三四级；⑤节点用简洁短语，保留原文术语，不增不漏；⑥用 Markdown 嵌套列表输出；⑦多种梳理时选最贴合原文的一种。 |
+**3. Shows what each polish cost.**
+Every finished run reports: model, wall time, result length, and token usage (120 in + 45 out = 165 tokens) when the provider reports it. When the provider does not, it says not-provided — it never invents a zero.
 
-"不要僵硬"五个字，展开成了七条可执行、可核查的要求——模型的发挥空间被限制住了，任务的验收标准立起来了。
+**4. Keeps a local history you explicitly opt into.**
+The first time a run finishes, a card asks: history stays on this device, contains inputs/results/models/tokens, and can be wiped anytime. 开启历史 saves; 不保存 keeps nothing and never nags again (re-enable any time from the History view). With consent, each run becomes a *version*, and revising a version chains them, so you can:
+- re-read any run's original input, output, and token cost;
+- open 对比版本链: original | selected | latest side by side, plus a local (deterministic, no-model-call) structural analysis — lines added/removed, and whether goal/background/constraints/output-format coverage appeared or disappeared;
+- delete one version, delete a whole chain, or clear everything.
 
-<details>
-<summary>点开看润色后的完整原文</summary>
+**5. Extracts variables.**
+One click asks the model which spans of the finished prompt are the changeable parts (time range, audience…) and rewrites them into {{变量}} slots — a reusable template you write back.
 
-> 请以我提供的章节具体内容为唯一依据，梳理该章节的内容结构，并输出为思维导图。要求如下：
-> 1. 不要套用固定模板、预设框架或僵化层级；章节实际讲了什么，就按什么逻辑拆分。
-> 2. 中心主题：使用章节标题或能够概括全章的核心主题。
-> 3. 一级分支：依据章节的主要部分、核心论点、关键问题或内容板块划分，数量随内容而定，通常为 3—7 个，不强行凑数。
-> 4. 下级分支：按分类、因果、流程、对比、例证、并列关系等实际逻辑展开；内容简单时可只到二级，内容复杂时可扩展至三级或四级。
-> 5. 节点表述：使用简洁的名词短语或短句，保留原文关键术语和核心概念；不添加原文没有的信息，不遗漏重要内容。
-> 6. 输出形式：使用 Markdown 嵌套列表或缩进大纲呈现，清晰体现父子层级关系，便于直接转换为思维导图。
-> 7. 若章节内容存在多种合理梳理方式，优先选择最贴合原文结构、最便于理解的一种；必要时可在节点后括注原文依据或关键词。
+## When it is worth using (and when it is not)
 
-</details>
+Worth it: short or vague drafts; recurring task types (reports, analyses, code requests); when you keep re-explaining what you want.
 
-**例二：把"帮我看看"变成一份评审任务书。**
+Skip it: prompts that are already structured (role + context + constraints + format); code snippets where you do not want the model rewording you; anything where you do not want an extra model call — the polish **is** a model call, and on a slow model you will wait.
 
-| 原话 | 润色后 |
-| --- | --- |
-| 我是想让你从产品经理的角度，看看我们这个作品设计的咋样，还有什么需要改进的 | 请以产品经理的视角评审本作品的设计并给出改进建议。作品信息（请按实际补充）：名称/类型、目标用户、核心痛点、核心功能与流程、设计材料。评审维度：①目标用户与痛点是否明确、真实；②功能与场景是否匹配、有无冗余缺失；③流程与交互是否顺畅、上手成本；④与同类方案的差异和优势；⑤可行性与商业价值。输出：先整体评价（优点+最关键问题），再按高/中/低优先级列可落地建议（每条带理由与预期效果）；信息不足先列出需补充项，不凭空假设。 |
+Honest limitations: the result is only as good as the template and model behind it — it adds structure but cannot know facts you forgot to include; iteration is one revision per call, not a chat; and every click costs tokens (typically a few hundred, shown before you commit).
 
-"看看咋样"四个字，变成了一份带输入清单、评审维度和产出结构的任务书——模型不再客套，缺材料会开口要。
+## Two real examples: what changes is the completeness of the task
 
-两个例子改的都是同一类东西：任务的目标、依据和验收标准。这些东西写清了，模型的回答才有着落——这正是每次点润色时，替你补上的部分。
+The short version first: **polish never rewrites your wording — it writes out the goal, the basis, the constraints and the output format that lived only in your head.** Both examples below are real runs from this plugin's own usage.
 
-## 使用成本
+### Example 1: one line of spoken-style feedback → seven executable requirements
 
-成本集中在一处：模型调用。除此之外没有账号、没有上传、没有后台进程。
+**Typed (7 short sentences, all attitude):**
 
-- **一次模型调用。** 每点一次润色就是一次流式调用，按 token 计费的环境真实产生开销，典型几百个 token（面板里可见："本次 120 输入 + 45 输出 = 165 tokens"）。打开面板、翻历史不产生调用。
-- **几秒钟等待。** 速度由模型决定，面板如实显示耗时；嫌慢可以在面板里换模型。
-- **一段学习成本，接近零。** 会打字就会用；三个模式（系统提示词/用户提示词/迭代优化）各管一类任务，默认模板由服务端下发，不需要你先研究。
+> 你不要僵硬，实际都是以具体内容为准的。你的目的在于梳理该章节的内容，以思维导图的形式呈现。 ("Don't be rigid — go by the actual content. Organize this chapter as a mind map.")
 
-## 安全边界
+The trouble: "don't be rigid" is an attitude, not a standard. What counts as rigid, what to go by, how many branches, what the output looks like — the model can only guess, and may guess wrong.
 
-所有写操作都以你的点击为前提，边界如下：
+**After one ✨ click, the model received:**
 
-- 不自动发送。结果只写回输入框，发送永远是你按回车或点"发送草稿"。
-- 不偷存数据。历史要先征求你的同意，只存在这台设备的浏览器里；选"不保存"就一条不存，也不再问。
-- 不替你补事实。它补的是结构——你忘了写的关键数据，它变不出来。
-- 不碰已经写好的提示词。角色、约束、格式俱全的草稿，再润色收益很小。
+> 请以我提供的章节具体内容为唯一依据，梳理该章节的内容结构，并输出为思维导图。要求如下： 1. 不要套用固定模板、预设框架或僵化层级；章节实际讲了什么，就按什么逻辑拆分。 2. 中心主题：使用章节标题或能概括全章的核心主题。 3. 一级分支：按主要部分/核心论点/关键问题划分，通常 3—7 个，不强行凑数。 4. 下级分支：按分类、因果、流程、对比等实际逻辑展开，简单到二级、复杂到三四级。 5. 节点表述：简洁名词短语，保留原文术语，不添加、不遗漏。 6. 输出形式：Markdown 嵌套列表，体现父子层级。 7. 多种合理梳理时，选最贴合原文结构、最便于理解的一种。
 
-## 典型工作流
+**What changed:** one attitude became seven checkable standards — a single source of truth, structure-follows-content, branch counts, depth limits, node phrasing, output format, and how to choose among competing readings. Every place you feared "rigid" now maps to a hard requirement.
 
-1. 随手写一句"帮我写个周报"，点 ✨，得到一份带角色、输出要求的周报提示词，看一眼，发送。
-2. 结果不够好，切到「迭代优化」，输入"更口语一点，加个数据部分"，在上一版上继续改。
-3. 打开历史（首次会先征求你的同意），看到每次的输入、结果和 token 消耗；点开一条链，三列对比原稿和各版本，确认哪版最好用。
-4. 周报模板用熟了，点「提取变量」，把"本周"这类常改的词抽成 \`{{时间范围}}\`，下次改一个词就能用。
+### Example 2: "take a look" → a complete review brief
 
-## 隐私
+**Typed (9 characters of intent; no criteria, no output spec):**
 
-历史（如果你开启）只写入这台设备的浏览器 localStorage，不上传、无遥测、无账号。删除是真删除。关闭后可随时在历史页重新开启。
+> 我是想让你从产品经理的角度，看看我们这个作品设计的咋样，还有什么需要改进的 ("From a PM's perspective, look at our design — how is it, what should improve?")
 
-## 安装
+This names a role (PM) but not what to review against, not what the deliverable looks like. The likely reply is polite filler: "overall good, polish the details."
 
-需要 DSH（desktop 或 web profile）与 Node.js 18+。
+**After one ✨ click, the model received:**
+
+> 请你以产品经理的视角，评审我提供的作品设计并给出改进建议。作品信息如下（请按实际情况补充）：作品名称/类型、目标用户群体、要解决的核心需求或痛点、核心功能与主要使用流程、设计材料。请重点从以下维度分析：1. 目标用户与核心需求是否明确、痛点是否真实；2. 功能与场景是否匹配、有无冗余或缺失；3. 流程与交互是否顺畅、上手成本；4. 与同类产品的差异和优势；5. 可行性与商业价值。输出要求：先整体评价（优点+最关键问题），再按高/中/低优先级列可落地建议（每条带理由和预期效果），信息不足先列需要补充的内容，不要凭空假设。
+
+**What changed:** three moves — it asks you for the missing product info instead of inventing it, locks "take a look" into five judgeable dimensions, and fixes the output order: overall verdict → prioritized actionable suggestions → request materials first if inputs are missing. The exits for generic praise are closed, one by one.
+
+The pattern in both: **polish supplies the premises your original message never stated** — the basis, the standards, the boundaries, the deliverable shape. The fuller those premises, the closer the result to what you meant. That is what the templates do, and what appending "take it seriously" never will.
+
+## Where it came from
+
+The optimization engine is a faithful port of
+[linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer) (AGPL-3.0):
+the three optimizationMode families, the template texts (kept verbatim, 10/10 byte-checked
+against upstream), the mustache rendering subset, the template registry with bidirectional
+field/reference validation, and the variable-extraction flow. The composer button, panel UI,
+history/version chain, comparison, and token reporting are new in this repo.
+
+## Install
+
+DSH (desktop or web profile) + Node.js 18+.
+
+The plugin is on npm as [`@benrong/dsh-prompt-polish`](https://www.npmjs.com/package/@benrong/dsh-prompt-polish), so on a CLI-managed profile (e.g. `web`) the stock command works:
+
+```bash
+dsh plugin --profile web add @benrong/dsh-prompt-polish
+```
+
+On the **desktop** profile the Electron app owns the profile (`dsh plugin --profile desktop …` is refused), so use the script below instead.
 
 ```powershell
 git clone https://github.com/benrong2048-boop/dsh-prompt-polish.git
 cd dsh-prompt-polish
-pwsh -File install-plugin.ps1 -ProfileName desktop   # 或 -ProfileName web
+pwsh -File install-plugin.ps1 -ProfileName desktop   # or -ProfileName web
 ```
 
-脚本把包复制进 `%USERPROFILE%\.dsh\profiles\<profile>\node_modules\`，做语法检查，并把插件行写进该 profile 的 `cordis.patch.yml`（会打印写入内容）。之后**完整重启 DSH**：桌面应用没有绑定刷新键，Ctrl+R 无效。
+The script copies the package into %USERPROFILE%\.dsh\profiles\<profile>\node_modules\,
+syntax-checks it, and appends the plugin row to that profile's cordis.patch.yml
+(it prints the exact lines it writes). Then **restart DSH** — a full restart; the
+desktop app has no reload key, and Ctrl+R does nothing.
 
-手动安装：把本目录复制到上述 node_modules 路径，并在 cordis.patch.yml 里加：
+Manual install, if you would rather see everything it touches:
+
+1. Copy this folder to %USERPROFILE%\.dsh\profiles\<profile>\node_modules\@benrong\dsh-prompt-polish.
+2. Append to %USERPROFILE%\.dsh\profiles\<profile>\cordis.patch.yml:
 
 ```yaml
 - insert:
@@ -100,24 +116,36 @@ pwsh -File install-plugin.ps1 -ProfileName desktop   # 或 -ProfileName web
       name: "@benrong/dsh-prompt-polish"
 ```
 
-卸载：删包目录、删那段 insert，重启 DSH。
+3. Restart DSH.
 
-## 测试
+Uninstall: delete the package folder and the insert block above, restart DSH.
+
+## Cost and privacy
+
+- **Model calls**: one streaming call per polish click, one per 迭代优化 revision, one per 提取变量. Nothing runs in the background; opening the panel costs nothing. Token counts are shown per run and per version chain.
+- **Privacy**: history (if you consent) lives in the browser localStorage on your machine. No telemetry, no uploads, no account. Deleting history is real deletion.
+- **Disk**: the installed package is ~90 KB (seven lib files plus the loader patch); localStorage history is capped at 50 entries with 4,000-character clipping per field.
+
+## Tests
 
 ```powershell
-node mustache.test.mjs    # 渲染引擎语义（34 项）
-node smoke.mjs            # 模板层（219 项）
-node contract.test.mjs    # 浏览器半：真 useEffect + 假流式 fetch（117 项）
-node host.test.mjs        # 宿主半：三条路由与失败路径（164 项）
-node compare-upstream.mjs # 审计：模板正文与上游逐字比对（需 $env:UP=<上游检出>）
+node mustache.test.mjs    # rendering engine semantics (34)
+node smoke.mjs            # template layer (219)
+node contract.test.mjs    # browser half, real useEffect + fake streaming fetch (117)
+node host.test.mjs        # host half, three routes + failure paths (164)
+node compare-upstream.mjs # audit: template texts vs upstream (needs $env:UP=<upstream checkout>)
 ```
 
-发布时 534 项断言全部通过。
+534 assertions, all green at publish time.
 
-## 上架 dshmarket
+## Submit to dshmarket
 
-目录条目在 [market/plugins-entry.json](./market/plugins-entry.json)，上架步骤见 [market/SUBMITTING.zh.md](./market/SUBMITTING.zh.md)（先发 npm，再向 awesome-dsh-plugin 目录提 PR）。
+A ready-to-paste catalog entry lives in [market/plugins-entry.json](./market/plugins-entry.json),
+with a step-by-step guide in [market/SUBMITTING.zh.md](./market/SUBMITTING.zh.md)
+(publish to npm, then PR the entry to the awesome-dsh-plugin catalog).
 
-## 协议
+## License
 
-AGPL-3.0-or-later，见 [LICENSE](./LICENSE)。润色引擎与模板来自 [linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer)（同为 AGPL-3.0），其作者权益在此声明保留。
+AGPL-3.0-or-later. See [LICENSE](./LICENSE). Upstream template texts and flows come from
+[linshenkx/prompt-optimizer](https://github.com/linshenkx/prompt-optimizer), also AGPL-3.0 —
+the license is inherited, and their authorship is credited.
