@@ -1,6 +1,6 @@
 {
   "name": "@benrong/dsh-prompt-polish",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Prompt-polish button beside the composer model seat for DSH, porting linshenkx/prompt-optimizer's optimizationMode axis, mustache template engine, template registry and variable extraction.",
   "type": "module",
   "license": "AGPL-3.0-or-later",
@@ -35,7 +35,8 @@
     "@deepseek-ai/cordis": "*",
     "@deepseek-ai/dsh-client-runtime": "*",
     "@deepseek-ai/dsh-llm": ">=0.1.7-0",
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/cordis": {
@@ -48,6 +49,9 @@
       "optional": true
     },
     "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     }
   },
