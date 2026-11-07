@@ -116,7 +116,27 @@ const fakeLocalStorage = {
 	removeItem: (key) => { localStorageStore.delete(key); },
 	clear: () => { localStorageStore.clear(); }
 };
-const sandbox = vm.createContext({ window: sandboxWindow, document: undefined, console, TextDecoder, TextEncoder, fetch: fakeFetch, AbortController, setTimeout, clearTimeout, navigator: sandboxNavigator, localStorage: fakeLocalStorage });
+/**
+ * DSH 0.2.2 makes the docked composer a CSS containment context, so the bundle
+ * must portal its fixed overlay to <body>. The harness supplies a real body and
+ * a createPortal stand-in that leaves the panel traversable by walk(), which is
+ * how the assertions below can still reach every node inside the open panel.
+ */
+const portalCalls = [];
+const sandboxDocument = {
+	body: { id: "body", appendChild() {}, removeChild() {} },
+	head: { appendChild() {} },
+	getElementById: () => ({}),
+	createElement: () => ({ style: {} }),
+	execCommand: () => true
+};
+const ReactDom = {
+	createPortal: (node, container) => {
+		portalCalls.push(container);
+		return { type: "portal", props: {}, children: [node] };
+	}
+};
+const sandbox = vm.createContext({ window: sandboxWindow, document: sandboxDocument, console, TextDecoder, TextEncoder, fetch: fakeFetch, AbortController, setTimeout, clearTimeout, navigator: sandboxNavigator, localStorage: fakeLocalStorage });
 new vm.Script(readFileSync(BUNDLE, "utf8"), { filename: "client.js" }).runInContext(sandbox);
 
 ok("bundle self-registers via window.__ModuleLoader__.load", registered !== null);
@@ -145,9 +165,10 @@ const requires = [];
 const plugin = registered.factory((spec) => {
 	requires.push(spec);
 	if (spec === "react") return React;
+	if (spec === "react-dom") return ReactDom;
 	throw new Error("unexpected require: " + spec);
 });
-ok("bundle requires only react", requires.join(",") === "react", requires.join(","));
+ok("bundle requires only react and react-dom", requires.join(",") === "react,react-dom", requires.join(","));
 ok("bundle exports apply", typeof plugin.apply === "function");
 ok("bundle exports inject", Array.isArray(plugin.inject) && plugin.inject.includes("slots"), JSON.stringify(plugin.inject));
 
@@ -250,6 +271,7 @@ byClass(tree, "pp-seat")[0].props.onClick();
 await settle();
 tree = render();
 ok("clicking the seat opens the panel", byClass(tree, "pp-panel").length === 1);
+ok("the open overlay portals to document.body (docked-composer containment)", portalCalls.length > 0 && portalCalls.every((c) => c === sandboxDocument.body), String(portalCalls.length));
 const tabLabels = byClass(tree, "pp-tab").map((node) => node.children.join(""));
 ok("tabs are the optimizationMode axis, not a style axis", tabLabels.join("|") === "系统提示词|用户提示词|迭代优化", tabLabels.join("|"));
 /**
