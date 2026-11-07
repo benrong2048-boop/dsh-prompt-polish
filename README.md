@@ -86,7 +86,7 @@ history/version chain, comparison, and token reporting are new in this repo.
 
 DSH (desktop or web profile) + Node.js 18+.
 
-Verified against DeepSeek Harness `0.2.1-rc.3` (desktop): the host routes, the `conversation.input.right` slot and the `llm` call path have been unchanged across `0.2.0-rc.2` → `0.2.1-rc.3`, so no plugin-side changes were needed. `node compat.mjs` re-checks that contract against your installed build and exits non-zero if a future release breaks it.
+Verified against DeepSeek Harness `0.2.2-rc.1` (desktop). The host routes, the `conversation.input.right` slot and the `llm` call path have been unchanged across `0.2.0-rc.2` → `0.2.2-rc.1`. One layout change did need work: 0.2.2 turned the docked composer into a CSS containment context, so the panel is now portalled to `document.body` (the slot contract requires it) instead of using `position: fixed` inside the composer. `node compat.mjs` re-checks that contract against your installed build and exits non-zero if a future release breaks it.
 
 The plugin is on npm as [`@benrong/dsh-prompt-polish`](https://www.npmjs.com/package/@benrong/dsh-prompt-polish), so on a CLI-managed profile (e.g. `web`) the stock command works:
 
