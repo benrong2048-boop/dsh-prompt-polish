@@ -84,7 +84,7 @@
 
 ## 安装
 
-已在 DeepSeek Harness `0.2.1-rc.3`（桌面版）实测：宿主路由、`conversation.input.right` 插槽与 `llm` 调用路径在 `0.2.0-rc.2` → `0.2.1-rc.3` 之间没有变化，升级不需要改插件代码。跑 `node compat.mjs` 可对着你本机安装的版本复查这份契约，缺任何一项都会以非零码退出。
+已在 DeepSeek Harness `0.2.2-rc.1`（桌面版）实测：宿主路由、`conversation.input.right` 插槽与 `llm` 调用路径在 `0.2.0-rc.2` → `0.2.2-rc.1` 之间没有变化。只有一处布局要跟着改：0.2.2 把停靠式输入框变成了 CSS containment 容器，面板因此改挂到 `document.body`（插槽契约明确要求），不再在输入框内部用 `position: fixed`。跑 `node compat.mjs` 可对着你本机安装的版本复查这份契约，缺任何一项都会以非零码退出。
 
 需要 DSH（desktop 或 web profile）与 Node.js 18+。
 
