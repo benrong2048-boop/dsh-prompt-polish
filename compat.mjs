@@ -36,6 +36,13 @@ const CLIENT_CHECKS = [
 	["module loader global", "__ModuleLoader__"],
 	["slot conversation.input.right", "conversation.input.right"],
 	["dsh.client manifest scan", "dsh.client"],
+	/**
+	 * A symbol check cannot see CSS containment, which was exactly the miss:
+	 * 0.2.2 turned the docked composer into a containment context and the
+	 * fixed panel silently moved with it. DSH documents the requirement in the
+	 * slot contract, so treat that sentence as part of the surface we depend on.
+	 */
+	["docked composer requires portalled overlays", "must portal to the document body"],
 ];
 
 /** Client packages our package.json declares in dsh.client.inject. */
@@ -153,4 +160,13 @@ if (failures === 0) {
 } else {
 	console.log(`  ${total - failures}/${total} checks passed — ${failures} missing. Re-check lib/index.js (host) and lib/client.js (client) against the new API.`);
 }
+/**
+ * A symbol audit cannot detect a layout regression: the 0.2.2 containment
+ * change kept every string above present while the panel silently shifted
+ * right. State the CSS fact explicitly so the next DSH update is read with the
+ * right question in mind, and keep the requirement next to the verdict.
+ */
+console.log("");
+console.log("  overlay rule: the docked composer is a CSS containment context;");
+console.log("  fixed overlays MUST be portalled to document.body (lib/client.js does this).");
 process.exit(failures === 0 ? 0 : 1);
