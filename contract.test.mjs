@@ -137,11 +137,14 @@ const ReactDom = {
 	}
 };
 const sandbox = vm.createContext({ window: sandboxWindow, document: sandboxDocument, console, TextDecoder, TextEncoder, fetch: fakeFetch, AbortController, setTimeout, clearTimeout, navigator: sandboxNavigator, localStorage: fakeLocalStorage });
-new vm.Script(readFileSync(BUNDLE, "utf8"), { filename: "client.js" }).runInContext(sandbox);
+const bundleSource = readFileSync(BUNDLE, "utf8");
+new vm.Script(bundleSource, { filename: "client.js" }).runInContext(sandbox);
 
 ok("bundle self-registers via window.__ModuleLoader__.load", registered !== null);
 ok("registration id matches the package name", registered?.id === PACKAGE_ID, String(registered?.id));
 ok("registration supplies a factory function", typeof registered?.factory === "function");
+ok("panel body uses the theme base surface", bundleSource.includes(".pp-body{flex:1 1 auto;overflow:auto;padding:12px 14px;background:var(--dsw-alias-bg-base)}"));
+ok("primary button text is not hardcoded white", bundleSource.includes('color:var(--dsw-alias-bg-base)') && !bundleSource.includes("color:#fff"));
 
 /* ---- a React stand-in that holds state and really runs effects ---------- */
 const state = [];
@@ -252,9 +255,9 @@ let tree = render();
 const seat = byClass(tree, "pp-seat")[0];
 ok("renders a pp-seat control", seat !== undefined);
 ok("seat is a real <button>", seat?.type === "button");
-ok("seat is labelled for Chinese users", JSON.stringify(seat?.children ?? []).includes("润色"));
-ok("seat wears the glow-button wrapper (two layers + spark)", byClass(tree, "pp-seatwrap").length === 1 && byClass(tree, "pp-seat-layer").length === 2 && byClass(tree, "pp-seat-spark").length === 1);
-ok("the seat carries no decorative label overlay", byClass(tree, "pp-seat-text").length === 0);
+ok("seat is labelled for Chinese users", JSON.stringify(seat?.props ?? {}).includes("润色"));
+ok("seat shows only one star glyph", byClass(tree, "pp-glyph").length === 1 && seat?.children?.length === 1 && JSON.stringify(byClass(tree, "pp-glyph")[0]?.children ?? []).includes("✨"));
+ok("the seat carries no decorative flame layers or text", byClass(tree, "pp-seat-layer").length === 0 && byClass(tree, "pp-seat-spark").length === 0 && byClass(tree, "pp-seat-text").length === 0);
 await settle();
 tree = render();
 ok("no effect threw on mount", effectErrors.length === 0, effectErrors.join(" | "));
